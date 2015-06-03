@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:orientation="vertical"
+              android:padding="20dp"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <EditText
+        android:layout_width="match_parent"
+        android:inputType="textAutoCorrect"
+        android:singleLine="true"
+        android:hint="@string/hint_title"
+        android:layout_height="wrap_content"
+        android:id="@+id/et_title"/>
+
+    <EditText
+        android:inputType="textAutoCorrect"
+        android:layout_width="match_parent"
+        android:layout_marginTop="10dp"
+        android:hint="@string/hint_message"
+        android:layout_height="wrap_content"
+        android:id="@+id/et_message"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        tools:text="Being time"
+        android:layout_marginTop="10dp"
+        android:id="@+id/tv_begin_time"
+        android:layout_gravity="center_horizontal"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/btn_set_start_date"
+        android:id="@+id/btn_start_date"
+        android:layout_gravity="center_horizontal"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        tools:text="Medium Text"
+        android:layout_marginTop="10dp"
+        android:id="@+id/tv_end_time"
+        android:layout_gravity="center_horizontal"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/btn_ensd_date"
+        android:id="@+id/btn_end_date"
+        android:layout_gravity="center_horizontal"/>
+
+</LinearLayout>

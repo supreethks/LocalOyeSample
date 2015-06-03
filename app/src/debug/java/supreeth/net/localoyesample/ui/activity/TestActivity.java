@@ -9,6 +9,7 @@ import supreeth.net.localoyesample.R;
 import supreeth.net.localoyesample.adapter.TaskListAdapter;
 import supreeth.net.localoyesample.mock.MockProvider;
 import supreeth.net.localoyesample.model.Task;
+import supreeth.net.localoyesample.ui.view.AddNewTaskView;
 import supreeth.net.localoyesample.ui.view.TaskListView;
 import supreeth.net.localoyesample.ui.view.TaskView;
 
@@ -26,6 +27,7 @@ public class TestActivity extends ActionBarActivity {
 //            e.printStackTrace();
 //        }
 //        setContentView(taskListView);
-        setContentView(R.layout.view_task_list);
+//        setContentView(R.layout.view_task_list);
+        setContentView(new AddNewTaskView(this));
     }
 }

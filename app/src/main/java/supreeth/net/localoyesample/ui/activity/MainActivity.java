@@ -1,8 +1,12 @@
 package supreeth.net.localoyesample.ui.activity;
 
+import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,8 +22,12 @@ import butterknife.InjectView;
 import supreeth.net.localoyesample.R;
 import supreeth.net.localoyesample.adapter.TasksTypePagerAdapter;
 import supreeth.net.localoyesample.event.AddNewTaskRequestedEvent;
+import supreeth.net.localoyesample.event.NewTaskAddedEvent;
 import supreeth.net.localoyesample.mock.MockProvider;
 import supreeth.net.localoyesample.model.Task;
+import supreeth.net.localoyesample.persistance.AppLocal;
+import supreeth.net.localoyesample.ui.fragment.AddTaskDialogFragment;
+import supreeth.net.localoyesample.ui.view.AddNewTaskView;
 import supreeth.net.localoyesample.ui.view.SlidingTabLayout;
 import supreeth.net.localoyesample.util.BusProvider;
 import timber.log.Timber;
@@ -41,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
 
         List<Task> tasks = new ArrayList<>();
         try {
-           tasks.addAll((List<Task>) MockProvider.getList(Task.class, 15));
+            tasks.addAll((List<Task>) MockProvider.getList(Task.class, 15));
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -77,7 +85,21 @@ public class MainActivity extends AppCompatActivity {
     @Subscribe
     public void onAddNewTaskRequested(AddNewTaskRequestedEvent event) {
         Timber.v("onAddNewTaskRequested ");
-        //TODO
+        showAddNewTaskDialog();
+    }
+
+    @Subscribe
+    public void onNewTaskAdded(NewTaskAddedEvent event) {
+        Timber.v("onNewTaskAdded");
+        AppLocal appLocal = new AppLocal();
+        tasksTypePagerAdapter.setTasks(appLocal.getSavedTasks());
+
+        //TODO set alarm for future tasks
+    }
+
+    private void showAddNewTaskDialog() {
+        DialogFragment addTaskDialogFragment = new AddTaskDialogFragment();
+        addTaskDialogFragment.show(getSupportFragmentManager(), AddTaskDialogFragment.class.getSimpleName());
     }
 
     @Override

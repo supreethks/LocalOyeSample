@@ -77,5 +77,8 @@ public class TasksTypePagerAdapter extends PagerAdapter {
         return view == object;
     }
 
-
+    public void setTasks(List<Task> tasks) {
+        this.tasks = tasks;
+        notifyDataSetChanged();
+    }
 }
