@@ -1,5 +1,6 @@
 package supreeth.net.localoyesample.receiver;
 
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -46,7 +47,9 @@ public class TaskBegunAlarmReceiver extends BroadcastReceiver {
                 new NotificationCompat.Builder(context)
                         .setSmallIcon(R.mipmap.ic_launcher)
                         .setContentTitle(task.getTitle())
-                        .setContentText(task.getMessage());
+                        .setContentText(task.getMessage())
+                .setTicker(context.getString(R.string.notification_ticker))
+                .setPriority(NotificationCompat.PRIORITY_HIGH);
 
         Intent resultIntent = new Intent(context, MainActivity.class);
 
@@ -60,7 +63,9 @@ public class TaskBegunAlarmReceiver extends BroadcastReceiver {
         NotificationManager mNotificationManager =
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         // mId allows you to update the notification later on.
-        mNotificationManager.notify(taskId, mBuilder.build());
+        Notification notification = mBuilder.build();
+        notification.defaults |= Notification.DEFAULT_ALL;
+        mNotificationManager.notify(taskId, notification);
 
         BusProvider.getBus().post(new RefreshTasksDisplayEvent());
     }
