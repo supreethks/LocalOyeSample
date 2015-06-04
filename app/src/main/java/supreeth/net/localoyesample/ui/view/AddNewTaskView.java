@@ -13,6 +13,7 @@ import android.widget.FrameLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import java.util.Calendar;
 
@@ -106,6 +107,8 @@ public class AddNewTaskView extends ScrollView {
     public void onDateClick(final View view) {
         Timber.v("onDateClick");
         final Calendar selectedTime = Calendar.getInstance();
+        selectedTime.set(Calendar.MILLISECOND,0);
+        selectedTime.set(Calendar.SECOND,0);
         final Calendar calendar = Calendar.getInstance();
         DatePickerDialog datePicker = new DatePickerDialog(getContext(),
                 new DatePickerDialog.OnDateSetListener() {
@@ -130,7 +133,16 @@ public class AddNewTaskView extends ScrollView {
                                         if (view.getId() == R.id.btn_start_date) {
                                             taskBeginTime = selectedTime.getTimeInMillis();
                                             setTaskBeginTime(taskBeginTime);
+
+                                            taskEndTime = taskBeginTime + 30 * 60 *1000;
+                                            setTaskEndTime(taskEndTime);
                                         } else if (view.getId() == R.id.btn_end_date) {
+                                            if (selectedTime.getTimeInMillis() <= taskBeginTime) {
+                                                Toast.makeText(getContext(),
+                                                        "End time cannot be earlier than begin time",
+                                                        Toast.LENGTH_SHORT).show();
+                                                return;
+                                            }
                                             taskEndTime = selectedTime.getTimeInMillis();
                                             setTaskEndTime(taskEndTime);
                                         }

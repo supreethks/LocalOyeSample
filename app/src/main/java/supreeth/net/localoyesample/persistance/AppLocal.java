@@ -8,6 +8,7 @@ import java.util.List;
 
 import supreeth.net.localoyesample.event.NewTaskAddedEvent;
 import supreeth.net.localoyesample.model.Task;
+import supreeth.net.localoyesample.model.TaskType;
 import supreeth.net.localoyesample.util.BusProvider;
 
 /**
@@ -43,6 +44,16 @@ public class AppLocal extends BasePref {
         Type type = new TypeToken<List<Task>>() {}.getType();
         List<Task> tasks = (List<Task>) fromJson(type, KEY_TASKS_LIST);
         return tasks == null ? new ArrayList<Task>() : tasks;
+    }
+
+    public List<Task> getPendingTasks() {
+        List<Task> pendingTasks = new ArrayList<>();
+        for (Task task : getSavedTasks()) {
+            if(task.getTaskType() == TaskType.PENDING) {
+                pendingTasks.add(task);
+            }
+        }
+        return pendingTasks;
     }
 
     public Task getTask(int taskId) {

@@ -28,10 +28,13 @@ import supreeth.net.localoyesample.R;
 import supreeth.net.localoyesample.adapter.TasksTypePagerAdapter;
 import supreeth.net.localoyesample.event.AddNewTaskRequestedEvent;
 import supreeth.net.localoyesample.event.NewTaskAddedEvent;
+import supreeth.net.localoyesample.event.RefreshTasksDisplayEvent;
+import supreeth.net.localoyesample.helper.AlarmHelper;
 import supreeth.net.localoyesample.mock.MockProvider;
 import supreeth.net.localoyesample.model.Task;
 import supreeth.net.localoyesample.persistance.AppLocal;
 import supreeth.net.localoyesample.receiver.TaskBegunAlarmReceiver;
+import supreeth.net.localoyesample.receiver.TaskEndedAlarmReceiver;
 import supreeth.net.localoyesample.ui.fragment.AddTaskDialogFragment;
 import supreeth.net.localoyesample.ui.view.AddNewTaskView;
 import supreeth.net.localoyesample.ui.view.SlidingTabLayout;
@@ -98,26 +101,28 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Subscribe
+    public void onRefreshTaskList(RefreshTasksDisplayEvent event) {
+        Timber.v("onRefreshTaskList");
+        refreshPager();
+    }
+
+    private void refreshPager() {
+        AppLocal appLocal = new AppLocal();
+        tasksTypePagerAdapter.setTasks(appLocal.getSavedTasks());
+    }
+
+    @Subscribe
     public void onNewTaskAdded(NewTaskAddedEvent event) {
         Task task = event.getTask();
         if (task == null) {
             throw new NullPointerException();
         }
         Timber.v("onNewTaskAdded");
-        AppLocal appLocal = new AppLocal();
-        tasksTypePagerAdapter.setTasks(appLocal.getSavedTasks());
+        refreshPager();
 
-        AlarmManager alarmMgr = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(this, TaskBegunAlarmReceiver.class);
-        intent.putExtra(TaskBegunAlarmReceiver.KEY_TASK_ID, task.getId());
-        PendingIntent onAlarmTriggerIntent = PendingIntent.getBroadcast(this, task.getId(), intent,
-                PendingIntent.FLAG_UPDATE_CURRENT);
+        AlarmHelper alarmHelper = new AlarmHelper(this,task);
+        alarmHelper.setAlarm();
 
-        //On some xiaomi phones RTC_WAKEUP alarm won't br triggered
-        alarmMgr.set(Build.MANUFACTURER.equalsIgnoreCase("Xiaomi") ?
-                        AlarmManager.RTC : AlarmManager.RTC_WAKEUP,
-                task.getTaskBeginTime(),
-                onAlarmTriggerIntent);
     }
 
     private void showAddNewTaskDialog() {

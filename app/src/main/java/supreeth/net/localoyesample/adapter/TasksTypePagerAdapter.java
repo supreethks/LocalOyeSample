@@ -55,6 +55,7 @@ public class TasksTypePagerAdapter extends PagerAdapter {
         List<Task> subList = new ArrayList<>();
         for (Task task : tasks) {
             if (task.getTaskType() == taskType) {
+                Timber.v("%s", task);
                 subList.add(task);
             }
         }

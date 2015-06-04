@@ -19,7 +19,7 @@ import timber.log.Timber;
 /**
  * Created by supreethks on 4/6/15.
  */
-public class TaskBegunAlarmReceiver extends BroadcastReceiver {
+public class TaskEndedAlarmReceiver extends BroadcastReceiver {
 
     public static final String KEY_TASK_ID = "task_id";
 
@@ -36,31 +36,10 @@ public class TaskBegunAlarmReceiver extends BroadcastReceiver {
         }
 
         int taskId = extras.getInt(KEY_TASK_ID);
-        AppLocal appLocal = new AppLocal();
-        Task task = appLocal.getTask(taskId);
-        if (task == null) {
-            return;
-        }
 
-        NotificationCompat.Builder mBuilder =
-                new NotificationCompat.Builder(context)
-                        .setSmallIcon(R.mipmap.ic_launcher)
-                        .setContentTitle(task.getTitle())
-                        .setContentText(task.getMessage());
-
-        Intent resultIntent = new Intent(context, MainActivity.class);
-
-        PendingIntent resultPendingIntent =
-                PendingIntent.getActivity(context,
-                        0,
-                        resultIntent,
-                        0
-                );
-        mBuilder.setContentIntent(resultPendingIntent);
         NotificationManager mNotificationManager =
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        // mId allows you to update the notification later on.
-        mNotificationManager.notify(taskId, mBuilder.build());
+        mNotificationManager.cancel(taskId);
 
         BusProvider.getBus().post(new RefreshTasksDisplayEvent());
     }

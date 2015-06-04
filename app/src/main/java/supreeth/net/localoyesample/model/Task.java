@@ -10,7 +10,6 @@ public class Task {
     String message;
     long taskBeginTime;
     long taskEndTime;
-    long systemCurrentTime;
     int id;
 
     private Task(Builder builder) {
@@ -19,14 +18,11 @@ public class Task {
         setMessage(builder.message);
         setTaskBeginTime(builder.taskBeginTime);
         setTaskEndTime(builder.taskEndTime);
-        setSystemCurrentTime(builder.systemCurrentTime);
         id = builder.id;
     }
 
     public TaskType getTaskType() {
-        if (systemCurrentTime == 0) {
-            systemCurrentTime = System.currentTimeMillis();
-        }
+        long systemCurrentTime = System.currentTimeMillis();
 
         if (taskBeginTime <= systemCurrentTime
                 && systemCurrentTime <= taskEndTime) {
@@ -45,14 +41,6 @@ public class Task {
 
     public void setTaskType(TaskType taskType) {
         this.taskType = taskType;
-    }
-
-    public long getSystemCurrentTime() {
-        return systemCurrentTime;
-    }
-
-    public void setSystemCurrentTime(long systemCurrentTime) {
-        this.systemCurrentTime = systemCurrentTime;
     }
 
     public String getTitle() {
@@ -98,12 +86,11 @@ public class Task {
     @Override
     public String toString() {
         return "Task{" +
-                "taskType=" + taskType +
+                "taskType=" + getTaskType() +
                 ", title='" + title + '\'' +
                 ", message='" + message + '\'' +
                 ", taskBeginTime=" + taskBeginTime +
                 ", taskEndTime=" + taskEndTime +
-                ", systemCurrentTime=" + systemCurrentTime +
                 ", id=" + id +
                 '}';
     }
@@ -142,11 +129,6 @@ public class Task {
 
         public Builder withTaskEndTime(long taskEndTime) {
             this.taskEndTime = taskEndTime;
-            return this;
-        }
-
-        public Builder withSystemCurrentTime(long systemCurrentTime) {
-            this.systemCurrentTime = systemCurrentTime;
             return this;
         }
 
