@@ -68,6 +68,11 @@ public class TasksTypePagerAdapter extends PagerAdapter {
     }
 
     @Override
+    public int getItemPosition(Object object) {
+        return POSITION_NONE;
+    }
+
+    @Override
     public void destroyItem(ViewGroup container, int position, Object object) {
         container.removeView((View) object);
     }
@@ -80,5 +85,9 @@ public class TasksTypePagerAdapter extends PagerAdapter {
     public void setTasks(List<Task> tasks) {
         this.tasks = tasks;
         notifyDataSetChanged();
+    }
+
+    public List<Task> getTasks() {
+        return tasks;
     }
 }

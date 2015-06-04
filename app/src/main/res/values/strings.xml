@@ -10,6 +10,7 @@
     <string name="btn_set_start_date">Set start date</string>
     <string name="btn_ensd_date">Set End date</string>
     <string name="btn_done">Done</string>
+    <string name="action_mock_data">Mock data</string>
 
     <string-array name="task_types">
         <item>New</item>

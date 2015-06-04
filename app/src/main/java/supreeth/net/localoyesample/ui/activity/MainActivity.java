@@ -1,7 +1,12 @@
 package supreeth.net.localoyesample.ui.activity;
 
+import android.app.AlarmManager;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.view.ViewPager;
@@ -26,6 +31,7 @@ import supreeth.net.localoyesample.event.NewTaskAddedEvent;
 import supreeth.net.localoyesample.mock.MockProvider;
 import supreeth.net.localoyesample.model.Task;
 import supreeth.net.localoyesample.persistance.AppLocal;
+import supreeth.net.localoyesample.receiver.TaskBegunAlarmReceiver;
 import supreeth.net.localoyesample.ui.fragment.AddTaskDialogFragment;
 import supreeth.net.localoyesample.ui.view.AddNewTaskView;
 import supreeth.net.localoyesample.ui.view.SlidingTabLayout;
@@ -47,12 +53,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.inject(this);
 
-        List<Task> tasks = new ArrayList<>();
-        try {
-            tasks.addAll((List<Task>) MockProvider.getList(Task.class, 15));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        AppLocal appLocal = new AppLocal();
+        List<Task> tasks = appLocal.getSavedTasks();
         tasksTypePagerAdapter = new TasksTypePagerAdapter(this, tasks);
         pagerTitleStrip.setSelectedIndicatorColors(getResources().getColor(R.color.brand_primary));
         pager.setAdapter(tasksTypePagerAdapter);
@@ -75,7 +77,14 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_mock) {
+            List<Task> tasks = new ArrayList<>(tasksTypePagerAdapter.getTasks());
+            try {
+                tasks.addAll((List<Task>) MockProvider.getList(Task.class, 15));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            tasksTypePagerAdapter.setTasks(tasks);
             return true;
         }
 
@@ -90,11 +99,25 @@ public class MainActivity extends AppCompatActivity {
 
     @Subscribe
     public void onNewTaskAdded(NewTaskAddedEvent event) {
+        Task task = event.getTask();
+        if (task == null) {
+            throw new NullPointerException();
+        }
         Timber.v("onNewTaskAdded");
         AppLocal appLocal = new AppLocal();
         tasksTypePagerAdapter.setTasks(appLocal.getSavedTasks());
 
-        //TODO set alarm for future tasks
+        AlarmManager alarmMgr = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(this, TaskBegunAlarmReceiver.class);
+        intent.putExtra(TaskBegunAlarmReceiver.KEY_TASK_ID, task.getId());
+        PendingIntent onAlarmTriggerIntent = PendingIntent.getBroadcast(this, task.getId(), intent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+
+        //On some xiaomi phones RTC_WAKEUP alarm won't br triggered
+        alarmMgr.set(Build.MANUFACTURER.equalsIgnoreCase("Xiaomi") ?
+                        AlarmManager.RTC : AlarmManager.RTC_WAKEUP,
+                task.getTaskBeginTime(),
+                onAlarmTriggerIntent);
     }
 
     private void showAddNewTaskDialog() {
